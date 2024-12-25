@@ -1,0 +1,167 @@
+<center><img src="tt.png" style="height: 50x; width: 50px;"><img src="y.png" style="height: 50x; width: 50px;"><img src="insta.png" style="height: 50x; width: 50px;"><img src="fb.png" style="height: 50x; width: 50px;"><img src="x.png" style="height: 50x; width: 50px;"><img src="li.png" style="height: 50x; width: 50px;"><img src="pin.png" style="height: 50x; width: 50px;"><br>Contact Us To Start Your Plan. Level Up Your Presence on social media.</center>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Public Website</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .success-message, .error-message {
+            display: none;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: green;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1></h1>
+    <div class="form-container">
+        <form id="contactForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required placeholder="Enter your name">
+
+            <label for="email">Your Email:</label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email">
+
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Type your message here..."></textarea>
+
+            <label for="file">Attach a File:</label>
+            <input type="file" id="file" name="file">
+
+            <button type="submit">Send Message</button>
+        </form>
+        <div class="success-message">Your message has been sent successfully!</div>
+        <div class="error-message">An error occurred. Please try again.</div>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            const emailData = {
+                sender: { email: "hanzlabaig917@gmail.com", name: formData.get('name') },
+                to: [{ email: "hanzlabaig917@gmail.com" }],
+                subject: "New Contact Form Submission",
+                htmlContent: `
+                    <p><strong>Name:</strong> ${formData.get('name')}</p>
+                    <p><strong>Email:</strong> ${formData.get('email')}</p>
+                    <p><strong>Message:</strong> ${formData.get('message')}</p>
+                `,
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    emailData.attachment = [
+                        {
+                            content: e.target.result.split(',')[1],
+                            name: file.name,
+                        },
+                    ];
+                    await sendEmail(emailData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                await sendEmail(emailData);
+            }
+        });
+
+        async function sendEmail(emailData) {
+            const successMessage = document.querySelector('.success-message');
+            const errorMessage = document.querySelector('.error-message');
+
+            try {
+                const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'api-key': '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',
+                    },
+                    body: JSON.stringify(emailData),
+                });
+
+                if (response.ok) {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    document.getElementById('contactForm').reset();
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
